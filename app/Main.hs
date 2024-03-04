@@ -7,7 +7,7 @@
 
 module Main (main) where
 
-import ParsingArg (parsingArgs, checkArgValue)
+import Parsing.ParsingArg (parsingArgs, checkArgValue)
 import System.Environment
 
 data Point = Point Int Int
