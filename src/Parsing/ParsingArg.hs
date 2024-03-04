@@ -5,7 +5,7 @@
 -- ParsingArg
 -}
 
-module ParsingArg (parsingArgs, checkArgValue) where
+module Parsing.ParsingArg (parsingArgs, checkArgValue) where
 
 import Text.Read (readMaybe)
 import System.Exit
