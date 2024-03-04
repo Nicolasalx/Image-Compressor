@@ -9,5 +9,11 @@ module Main (main) where
 
 import Lib
 
+data Point = Point Int Int
+
+data Color = Color Int Int Int
+
+-- [(Point, Color)]
+
 main :: IO ()
 main = someFunc
