@@ -7,13 +7,16 @@
 
 module Main (main) where
 
-import Lib
+import ParsingArg (parsingArgs, checkArgValue)
+import System.Environment
 
 data Point = Point Int Int
-
 data Color = Color Int Int Int
 
 -- [(Point, Color)]
 
 main :: IO ()
-main = someFunc
+main = do
+    args <- getArgs
+    _ <- checkArgValue (parsingArgs args)
+    print ("ok")
