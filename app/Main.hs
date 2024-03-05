@@ -8,6 +8,7 @@
 module Main (main) where
 
 import Parsing.ParsingArg (parsingArgs, checkArgValue)
+import Parsing.ParsingImg (parsingFile)
 import System.Environment
 
 data Point = Point Int Int
@@ -18,5 +19,6 @@ data Color = Color Int Int Int
 main :: IO ()
 main = do
     args <- getArgs
-    _ <- checkArgValue (parsingArgs args)
-    print ("ok")
+    cmdArgs <- checkArgValue (parsingArgs args)
+    _ <- parsingFile cmdArgs
+    pure()

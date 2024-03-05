@@ -5,7 +5,7 @@
 -- ParsingArg
 -}
 
-module Parsing.ParsingArg (parsingArgs, checkArgValue) where
+module Parsing.ParsingArg (parsingArgs, checkArgValue, Args(..)) where
 
 import Text.Read (readMaybe)
 import System.Exit
@@ -25,13 +25,11 @@ defaultArgs =
         filepathImg = Nothing
     }
 
-checkArgValue :: Maybe Args -> IO (Maybe Args)
-checkArgValue (Just (Args Nothing _ _)) = exitWith (ExitFailure 84)
-checkArgValue (Just (Args _ Nothing _)) = exitWith (ExitFailure 84)
-checkArgValue (Just (Args _ _ Nothing)) = exitWith (ExitFailure 84)
-checkArgValue Nothing = exitWith (ExitFailure 84)
+checkArgValue :: Args -> IO Args
+checkArgValue ((Args Nothing _ _)) = exitWith (ExitFailure 84)
+checkArgValue ((Args _ Nothing _)) = exitWith (ExitFailure 84)
+checkArgValue ((Args _ _ Nothing)) = exitWith (ExitFailure 84)
 checkArgValue args = return args
-
 
 isPositive :: Maybe Int -> Maybe Int
 isPositive (Just value)
@@ -39,12 +37,12 @@ isPositive (Just value)
     | otherwise = Just value
 isPositive Nothing = Nothing
 
-getOpts :: Args -> [String] -> Maybe Args
+getOpts :: Args -> [String] -> Args
 getOpts args ("-n" : second : remain) = getOpts (args {nbColors = isPositive (readMaybe second)}) remain
 getOpts args ("-l" : second : remain) = getOpts (args {convergLimit = isPositive (readMaybe second)}) remain
 getOpts args ("-f" : second : remain) = getOpts (args {filepathImg = Just second}) remain
-getOpts args [] = Just args
-getOpts _ _ = Nothing
+getOpts args [] = args
+getOpts args _ = args
 
-parsingArgs :: [String] -> Maybe Args
+parsingArgs :: [String] -> Args
 parsingArgs args = getOpts defaultArgs args
