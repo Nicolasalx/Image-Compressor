@@ -7,40 +7,44 @@
 
 module Compression where
 import System.Random (randomRIO)
-
-data Vector3 = Vector3 Int Int Int
-    deriving (Show)
+import Debug.Trace
 
 data Color = Color Int Int Int
-    deriving (Show, Eq)
+    deriving (Eq)
 
-data Centroid = Centroid Int Int Int
-    deriving (Show, Eq)
+instance Show Color where
+    show (Color r g b) = "(" ++ show r ++ "," ++ show g ++ "," ++ show b ++ ")"
+
+data Point = Point Int Int
+    deriving (Eq)
+
+instance Show Point where
+    show (Point x y) = "(" ++ show x ++ "," ++ show y ++ ") "
+
+
+data Centroid = Centroid Double Double Double
+    deriving (Eq)
+
+instance Show Centroid where
+    show (Centroid r g b) = "--\n(" ++ show (round r) ++ "," ++ show (round g) ++ "," ++ show (round b) ++ ")\n-"
 
 -- euclidian distance between 2 vector
 
-sq :: Int -> Double
-sq x = fromIntegral (x * x)
+sq :: Double -> Double
+sq x = (x * x)
 
 euclidianDistance :: Centroid -> Color -> Double
 euclidianDistance (Centroid va1 vb1 vc1) (Color va2 vb2 vc2) =
+    sqrt (sq (va1 - (fromIntegral va2)) + sq (vb1 - (fromIntegral vb2)) + sq (vc1 - (fromIntegral vc2)))
+
+euclidianDistanceCent :: Centroid -> Centroid -> Double
+euclidianDistanceCent (Centroid va1 vb1 vc1) (Centroid va2 vb2 vc2) =
     sqrt (sq (va1 - va2) + sq (vb1 - vb2) + sq (vc1 - vc2))
-
--- -- max distance
-
--- findSmallest :: Vector3 -> Vector3 -> (Vector3, Double) -> (Vector3, Double)
--- findSmallest vec cmpvec smallest
---     | (euclidianDistance vec cmpvec) < (snd smallest) = (vec, euclidianDistance vec cmpvec)
---     | otherwise = smallest
-
--- smallestDistance :: [Vector3] -> Vector3 -> (Vector3, Double) -> (Vector3, Double)
--- smallestDistance (first : remain) vec smallest = smallestDistance remain vec (findSmallest first vec smallest)
--- smallestDistance [] _ smallest = smallest
 
 -- ! ----------------------------------
 initCentroid :: [Int] -> [Centroid]
 initCentroid (first : second : third : remain) =
-    (Centroid first second third) : initCentroid remain
+    (Centroid (fromIntegral first) (fromIntegral second) (fromIntegral third)) : initCentroid remain
 initCentroid _ = []
 
 createRandomList :: Int -> IO [Int]
@@ -83,11 +87,80 @@ assignDataPoint centroid (first : remain) cluster =
         -- Add Color to the Centroid list
 assignDataPoint _ [] cluster = cluster
 
+-- !
 
--- assignDataPoint [(Centroid 33 18 109)] [(Color 34 18 112)] (initCentroidAndColor $1)
+addColor :: Centroid -> Centroid -> Centroid
+addColor (Centroid r1 g1 b1) (Centroid r2 g2 b2) = (Centroid (r1 + r2) (g1 + g2) (b1 + b2))
 
-startKMeans :: Int -> Int -> [Color] -> IO ()
+sumColor :: [Color] -> Centroid
+sumColor ((Color r g b) : remain) = addColor (Centroid (fromIntegral r) (fromIntegral g) (fromIntegral b)) (sumColor remain)
+sumColor [] = (Centroid 0 0 0)
+
+divCentroid :: Centroid -> Int -> Centroid
+divCentroid _ 0 = (Centroid 0 0 0)
+divCentroid (Centroid r g b) divisor = (Centroid (r / (fromIntegral divisor)) (g / (fromIntegral divisor)) (b / (fromIntegral divisor)))
+
+computeAverageColor :: [Color] -> Centroid
+computeAverageColor colorList = divCentroid (sumColor colorList) (length colorList)
+
+-- ! need to return a double of
+-- computeNewCentroid :: [(Centroid, [Color])] -> ([(Centroid, [Color])], Double)
+-- computeNewCentroid (first : remain) =
+--     (computeAverageColor (snd first), snd first) : computeNewCentroid remain
+-- computeNewCentroid [] = ([], convergence)
+
+computeNewCentroid :: [(Centroid, [Color])] -> ([(Centroid, [Color])], Double)
+computeNewCentroid (first : remain) =
+    let prevCentroid = fst first
+        newCentroid = computeAverageColor (snd first)
+        (newCluster, maxDistance) = computeNewCentroid remain
+    in ((newCentroid, (snd first)) : newCluster, max (euclidianDistanceCent prevCentroid newCentroid) maxDistance)
+computeNewCentroid [] = ([], 0.0)
+
+-- !
+
+extractCentroidList :: [(Centroid, [Color])] -> [Centroid]
+extractCentroidList (first : remain) = (fst first) : extractCentroidList remain
+extractCentroidList [] = []
+
+extractColorList :: [(Centroid, [Color])] -> [Color]
+extractColorList (first : remain) = (snd first) ++ extractColorList remain
+extractColorList [] = []
+
+checkLimit :: ([(Centroid, [Color])], Double) -> Double -> [(Centroid, [Color])]
+checkLimit centroidColor limit
+    | (snd centroidColor) > limit = kmeansLoop (fst centroidColor) limit
+    | otherwise = fst centroidColor
+
+removeColor :: [(Centroid, [Color])] -> [(Centroid, [Color])]
+removeColor ((centroid, _) : remain) = (centroid, []) : removeColor remain
+removeColor [] = []
+
+kmeansLoop :: [(Centroid, [Color])] -> Double -> [(Centroid, [Color])]
+kmeansLoop centroidColor limit = do
+    let assignData = assignDataPoint (extractCentroidList centroidColor) (extractColorList centroidColor) (removeColor centroidColor)
+    let newCentroid = computeNewCentroid assignData
+    checkLimit newCentroid limit
+
+
+
+-- !
+
+printKMeansColor :: [Color] -> IO ()
+printKMeansColor (first : remain) = print (first) >> printKMeansColor remain
+printKMeansColor [] = return ()
+
+printKMeans :: [(Centroid, [Color])] -> IO ()
+printKMeans ((centroid, color) : remain) = print centroid >> printKMeansColor color >> printKMeans remain
+printKMeans [] = return ()
+
+-- startKMeans N L [Color]
+startKMeans :: Int -> Double -> [Color] -> IO ()
 startKMeans nbCluster limit color = do
     randomList <- createRandomList (nbCluster * 3)
     let centroid = initCentroid randomList
-    print (assignDataPoint (centroid) color (initCentroidAndColor centroid))
+    let dataPoint = (assignDataPoint (centroid) color (initCentroidAndColor centroid))
+    let newCentroid = computeNewCentroid dataPoint
+    let res = kmeansLoop (fst newCentroid) limit
+    printKMeans res
+--    kmeansLoop newCentroid limit
