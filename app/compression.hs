@@ -7,13 +7,12 @@
 
 module Compression where
 import System.Random (randomRIO)
-import Debug.Trace
 
-data Color = Color Int Int Int
+data Pixel = Pixel Int Int Int Int Int
     deriving (Eq)
 
-instance Show Color where
-    show (Color r g b) = "(" ++ show r ++ "," ++ show g ++ "," ++ show b ++ ")"
+instance Show Pixel where
+    show (Pixel x y r g b) = "(" ++ show x ++ "," ++ show y ++ ") (" ++ show r ++ "," ++ show g ++ "," ++ show b ++ ")"
 
 data Point = Point Int Int
     deriving (Eq)
@@ -33,8 +32,8 @@ instance Show Centroid where
 sq :: Double -> Double
 sq x = (x * x)
 
-euclidianDistance :: Centroid -> Color -> Double
-euclidianDistance (Centroid va1 vb1 vc1) (Color va2 vb2 vc2) =
+euclidianDistance :: Centroid -> Pixel -> Double
+euclidianDistance (Centroid va1 vb1 vc1) (Pixel _ _ va2 vb2 vc2) =
     sqrt (sq (va1 - (fromIntegral va2)) + sq (vb1 - (fromIntegral vb2)) + sq (vc1 - (fromIntegral vc2)))
 
 euclidianDistanceCent :: Centroid -> Centroid -> Double
@@ -55,30 +54,30 @@ createRandomList nbCentroid = do
     return (randomNb : remain)
 -- ! ----------------------------------
 
-cmpCentroidColor :: Centroid -> Color -> (Centroid, Double) -> (Centroid, Double)
+cmpCentroidColor :: Centroid -> Pixel -> (Centroid, Double) -> (Centroid, Double)
 cmpCentroidColor centroid color smallest
     | (euclidianDistance centroid color) < (snd smallest) = (centroid, euclidianDistance centroid color)
     | otherwise = smallest
 
-findClosestCentroid :: [Centroid] -> Color -> (Centroid, Double) -> (Centroid, Double)
+findClosestCentroid :: [Centroid] -> Pixel -> (Centroid, Double) -> (Centroid, Double)
 findClosestCentroid (first : remain) color smallest =
     findClosestCentroid remain color (cmpCentroidColor first color smallest)
 findClosestCentroid [] _ smallest = smallest
 
 -- ???
 
-initCentroidAndColor :: [Centroid] -> [(Centroid, [Color])]
+initCentroidAndColor :: [Centroid] -> [(Centroid, [Pixel])]
 initCentroidAndColor centroidList = map (\centroid -> (centroid, [])) centroidList
 
-cmpCentroid :: Centroid -> Color -> (Centroid, [Color]) -> (Centroid, [Color])
+cmpCentroid :: Centroid -> Pixel -> (Centroid, [Pixel]) -> (Centroid, [Pixel])
 cmpCentroid centroid color (currentCentroid, currentColor)
     | currentCentroid == centroid = (currentCentroid, color : currentColor)
     | otherwise = (currentCentroid, currentColor)
 
-appendColorToCentroid :: Centroid -> Color -> [(Centroid, [Color])] -> [(Centroid, [Color])]
+appendColorToCentroid :: Centroid -> Pixel -> [(Centroid, [Pixel])] -> [(Centroid, [Pixel])]
 appendColorToCentroid centroid color cluster = map (cmpCentroid centroid color) cluster
 
-assignDataPoint :: [Centroid] -> [Color] -> [(Centroid, [Color])] -> [(Centroid, [Color])]
+assignDataPoint :: [Centroid] -> [Pixel] -> [(Centroid, [Pixel])] -> [(Centroid, [Pixel])]
 assignDataPoint centroid (first : remain) cluster =
     assignDataPoint centroid remain (appendColorToCentroid (fst (findClosestCentroid centroid first ((Centroid 0 0 0), 10000))) first cluster)
 
@@ -92,15 +91,15 @@ assignDataPoint _ [] cluster = cluster
 addColor :: Centroid -> Centroid -> Centroid
 addColor (Centroid r1 g1 b1) (Centroid r2 g2 b2) = (Centroid (r1 + r2) (g1 + g2) (b1 + b2))
 
-sumColor :: [Color] -> Centroid
-sumColor ((Color r g b) : remain) = addColor (Centroid (fromIntegral r) (fromIntegral g) (fromIntegral b)) (sumColor remain)
+sumColor :: [Pixel] -> Centroid
+sumColor ((Pixel _ _ r g b) : remain) = addColor (Centroid (fromIntegral r) (fromIntegral g) (fromIntegral b)) (sumColor remain)
 sumColor [] = (Centroid 0 0 0)
 
 divCentroid :: Centroid -> Int -> Centroid
 divCentroid _ 0 = (Centroid 0 0 0)
 divCentroid (Centroid r g b) divisor = (Centroid (r / (fromIntegral divisor)) (g / (fromIntegral divisor)) (b / (fromIntegral divisor)))
 
-computeAverageColor :: [Color] -> Centroid
+computeAverageColor :: [Pixel] -> Centroid
 computeAverageColor colorList = divCentroid (sumColor colorList) (length colorList)
 
 -- ! need to return a double of
@@ -109,7 +108,7 @@ computeAverageColor colorList = divCentroid (sumColor colorList) (length colorLi
 --     (computeAverageColor (snd first), snd first) : computeNewCentroid remain
 -- computeNewCentroid [] = ([], convergence)
 
-computeNewCentroid :: [(Centroid, [Color])] -> ([(Centroid, [Color])], Double)
+computeNewCentroid :: [(Centroid, [Pixel])] -> ([(Centroid, [Pixel])], Double)
 computeNewCentroid (first : remain) =
     let prevCentroid = fst first
         newCentroid = computeAverageColor (snd first)
@@ -119,24 +118,24 @@ computeNewCentroid [] = ([], 0.0)
 
 -- !
 
-extractCentroidList :: [(Centroid, [Color])] -> [Centroid]
+extractCentroidList :: [(Centroid, [Pixel])] -> [Centroid]
 extractCentroidList (first : remain) = (fst first) : extractCentroidList remain
 extractCentroidList [] = []
 
-extractColorList :: [(Centroid, [Color])] -> [Color]
+extractColorList :: [(Centroid, [Pixel])] -> [Pixel]
 extractColorList (first : remain) = (snd first) ++ extractColorList remain
 extractColorList [] = []
 
-checkLimit :: ([(Centroid, [Color])], Double) -> Double -> [(Centroid, [Color])]
+checkLimit :: ([(Centroid, [Pixel])], Double) -> Double -> [(Centroid, [Pixel])]
 checkLimit centroidColor limit
     | (snd centroidColor) > limit = kmeansLoop (fst centroidColor) limit
     | otherwise = fst centroidColor
 
-removeColor :: [(Centroid, [Color])] -> [(Centroid, [Color])]
+removeColor :: [(Centroid, [Pixel])] -> [(Centroid, [Pixel])]
 removeColor ((centroid, _) : remain) = (centroid, []) : removeColor remain
 removeColor [] = []
 
-kmeansLoop :: [(Centroid, [Color])] -> Double -> [(Centroid, [Color])]
+kmeansLoop :: [(Centroid, [Pixel])] -> Double -> [(Centroid, [Pixel])]
 kmeansLoop centroidColor limit = do
     let assignData = assignDataPoint (extractCentroidList centroidColor) (extractColorList centroidColor) (removeColor centroidColor)
     let newCentroid = computeNewCentroid assignData
@@ -146,16 +145,16 @@ kmeansLoop centroidColor limit = do
 
 -- !
 
-printKMeansColor :: [Color] -> IO ()
+printKMeansColor :: [Pixel] -> IO ()
 printKMeansColor (first : remain) = print (first) >> printKMeansColor remain
 printKMeansColor [] = return ()
 
-printKMeans :: [(Centroid, [Color])] -> IO ()
+printKMeans :: [(Centroid, [Pixel])] -> IO ()
 printKMeans ((centroid, color) : remain) = print centroid >> printKMeansColor color >> printKMeans remain
 printKMeans [] = return ()
 
--- startKMeans N L [Color]
-startKMeans :: Int -> Double -> [Color] -> IO ()
+-- startKMeans N L [Pixel]
+startKMeans :: Int -> Double -> [Pixel] -> IO ()
 startKMeans nbCluster limit color = do
     randomList <- createRandomList (nbCluster * 3)
     let centroid = initCentroid randomList
