@@ -6,9 +6,9 @@
 -}
 
 module KMeans.Compression (startKMeans) where
-import System.Random (randomRIO)
 import DataStruct (Pixel(..))
 import System.Exit
+import System.Random (randomRIO)
 
 data Point = Point Int Int
     deriving (Eq)
