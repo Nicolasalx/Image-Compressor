@@ -6,22 +6,16 @@
 -}
 
 module KMeans.Compression (startKMeans) where
-import DataStruct (Pixel(..))
+import DataStruct (Pixel(..), Centroid(..))
+import KMeans.ExportInPng (exportInPng)
 import System.Exit
 import System.Random (randomRIO)
 
-data Point = Point Int Int
-    deriving (Eq)
-
-instance Show Point where
-    show (Point x y) = "(" ++ show x ++ "," ++ show y ++ ") "
-
-
-data Centroid = Centroid Double Double Double
-    deriving (Eq)
-
-instance Show Centroid where
-    show (Centroid r g b) = "--\n(" ++ show (round r :: Int) ++ "," ++ show (round g :: Int) ++ "," ++ show (round b :: Int) ++ ")\n-"
+-- data Point = Point Int Int
+--     deriving (Eq)
+-- 
+-- instance Show Point where
+--     show (Point x y) = "(" ++ show x ++ "," ++ show y ++ ") "
 
 -- euclidian distance between 2 vector
 
@@ -167,13 +161,20 @@ printKMeans ((centroid, color) : remain) =
     print centroid >> printKMeansColor color >> printKMeans remain
 printKMeans [] = return ()
 
--- startKMeans N L [Pixel]
-startKMeans :: Maybe Int -> Maybe Double -> [Pixel] -> IO ()
-startKMeans (Just nbCluster) (Just limit) color = do
+-- startKMeans N L IsGraphical [Pixel]
+startKMeans :: Maybe Int -> Maybe Double -> Bool -> [Pixel] -> IO ()
+startKMeans (Just nbCluster) (Just limit) False color = do
     randomList <- createRandomList (nbCluster * 3)
     let centroid = initCentroid randomList
     let dataPoint = (assignDataPoint (centroid) color (initCentroidAndColor centroid))
     let newCentroid = computeNewCentroid dataPoint
     let res = kmeansLoop (fst newCentroid) limit
     printKMeans res
-startKMeans _ _ _ = exitWith (ExitFailure 84)
+startKMeans (Just nbCluster) (Just limit) True color = do
+    randomList <- createRandomList (nbCluster * 3)
+    let centroid = initCentroid randomList
+    let dataPoint = (assignDataPoint (centroid) color (initCentroidAndColor centroid))
+    let newCentroid = computeNewCentroid dataPoint
+    let res = kmeansLoop (fst newCentroid) limit
+    exportInPng res
+startKMeans _ _ _ _ = exitWith (ExitFailure 84)
