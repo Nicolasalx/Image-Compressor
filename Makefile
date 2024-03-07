@@ -12,13 +12,13 @@ BIN_PATH	:=	$(shell stack path --local-install-root --resolver=lts-20.11)
 NAME_TEST 	= 	unit_tests
 
 $(NAME):
-	stack build --resolver=lts-20.11
+	stack build --resolver=lts-20.11 --allow-different-user
 	cp $(BIN_PATH)/bin/$(NAME)-exe $(NAME)
 
 all: $(NAME)
 
 clean:
-	stack clean --resolver=lts-20.11
+	stack clean --resolver=lts-20.11 --allow-different-user
 
 fclean: clean
 	rm -f $(NAME)
