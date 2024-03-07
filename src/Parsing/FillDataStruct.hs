@@ -6,7 +6,7 @@
 -}
 
 module Parsing.FillDataStruct(fillDataStruct, checkDataStruct) where
-import Algo(Pixel(..))
+import DataStruct (Pixel(..))
 import System.Exit
 
 processEntry :: [[Int]] -> [Pixel]

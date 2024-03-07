@@ -12,7 +12,7 @@ import Parsing.LibParsing(putError, countOccurrences)
 import Parsing.FillDataStruct (fillDataStruct, checkDataStruct)
 import Parsing.FileIsValid (isFileValid, nonEmptyLines)
 import Parsing.GetInfoLine (splitByCommas, extract, isACharOutsideParenthese)
-import Algo(Pixel(..)) -- ! A changer (voir quand on merge)
+import DataStruct (Pixel(..))
 import System.IO
 import System.Directory (doesFileExist)
 

@@ -5,14 +5,9 @@
 -- compression
 -}
 
-module Compression where
+module KMeans.Compression (startKMeans) where
 import System.Random (randomRIO)
-
-data Pixel = Pixel Int Int Int Int Int
-    deriving (Eq)
-
-instance Show Pixel where
-    show (Pixel x y r g b) = "(" ++ show x ++ "," ++ show y ++ ") (" ++ show r ++ "," ++ show g ++ "," ++ show b ++ ")"
+import DataStruct (Pixel(..))
 
 data Point = Point Int Int
     deriving (Eq)
@@ -172,8 +167,8 @@ printKMeans ((centroid, color) : remain) =
 printKMeans [] = return ()
 
 -- startKMeans N L [Pixel]
-startKMeans :: Int -> Double -> [Pixel] -> IO ()
-startKMeans nbCluster limit color = do
+startKMeans :: Maybe Int -> Maybe Double -> [Pixel] -> IO ()
+startKMeans (Just nbCluster) (Just limit) color = do
     randomList <- createRandomList (nbCluster * 3)
     let centroid = initCentroid randomList
     let dataPoint = (assignDataPoint (centroid) color (initCentroidAndColor centroid))
