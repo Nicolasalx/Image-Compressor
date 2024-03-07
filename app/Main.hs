@@ -17,5 +17,4 @@ main = do
     args <- getArgs
     (Args nbCol convLimit fpImg) <- checkArgValue (parsingArgs args)
     arrayPointColour <- parsingFile (Args nbCol convLimit fpImg)
-    print arrayPointColour
     startKMeans nbCol convLimit arrayPointColour
