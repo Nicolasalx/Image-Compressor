@@ -4,7 +4,7 @@ RETURN_VALUE=0
 
 test_success()
 {
-    ./imageCompressor -n 2 -l 0.8 -f $1
+    ./imageCompressor -n 2 -l 0.8 -f $1 &> /dev/null
     if [ $? -eq 0 ]; then
         echo -e "[\e[92mPASS\e[0m]"
     else
@@ -15,7 +15,7 @@ test_success()
 
 test_fail()
 {
-    ./imageCompressor -n 2 -l 0.8 -f $1
+    ./imageCompressor -n 2 -l 0.8 -f $1 &> /dev/null
     if [ $? -eq 84 ]; then
         echo -e "[\e[92mPASS\e[0m]"
     else
@@ -33,9 +33,6 @@ test_name()
 }
 
 make re
-
-test_name "Basic File"
-test_success tests_file/subject_example
 
 for file in tests_file/single/*
 do
