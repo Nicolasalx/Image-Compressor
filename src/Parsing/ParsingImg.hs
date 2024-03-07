@@ -15,7 +15,7 @@ import Parsing.GetInfoLine (splitByCommas, extract, isACharOutsideParenthese)
 import DataStruct (Pixel(..))
 import Parsing.ParsingRealImg (parsingRealImg)
 import System.IO
-import System.Directory (doesFileExist)
+import Control.Exception
 
 parseInstruction :: String -> Maybe [[Int]]
 parseInstruction line
@@ -30,20 +30,20 @@ parseInstruction line
 parseEachLine :: [String] -> Maybe [[[Int]]]
 parseEachLine = traverse parseInstruction
 
-checkFilePath :: Bool -> IO ()
-checkFilePath True = pure ()
-checkFilePath False = putError "The filePath is not a path of a file!"
-
-parsingFile :: Args -> IO [Pixel]
-parsingFile (Args nbCol convLimit (Just filepath) True) =
-    parsingRealImg (Args nbCol convLimit (Just filepath) True)
-parsingFile (Args _ _ (Just filepath) False) = do
-    isAFile <- doesFileExist filepath
-    checkFilePath isAFile
-    file <- openFile filepath ReadMode
+handleFileOrError :: Either IOException Handle -> IO [Pixel]
+handleFileOrError (Left e) = putError
+    ("Error: " ++ show (e :: IOException)) >> return []
+handleFileOrError (Right file) = do
     contents <- hGetContents file
     let eachLine = parseEachLine (nonEmptyLines contents)
     isFileValid eachLine
     hClose file
     checkDataStruct (fillDataStruct eachLine)
+
+parsingFile :: Args -> IO [Pixel]
+parsingFile (Args nbCol convLimit (Just filepath) True) =
+    parsingRealImg (Args nbCol convLimit (Just filepath) True)
+parsingFile (Args _ _ (Just filepath) False) = do
+    fileOrError <- try $ openFile filepath ReadMode
+    handleFileOrError fileOrError
 parsingFile _ = return []
