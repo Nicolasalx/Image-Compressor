@@ -23,7 +23,7 @@ jobs:
       run: |
           echo "## 🚀 Compilation result" >> $GITHUB_STEP_SUMMARY
           {
-            chown --allow-different-user -R $(id -un):$(id -gn) ~
+            chown -R $(id -un):$(id -gn) ~
             set +e
             make
             if [ $? -ne 0 ]; then
