@@ -5,7 +5,7 @@
 -- FileIsValid
 -}
 
-module Parsing.FileIsValid (isFileValid, nonEmptyLines) where
+module Parsing.FileIsValid (isFileValid, nonEmptyLines, handleValidityFile) where
 import Parsing.LibParsing(putError)
 
 handleValidityFile :: Bool -> IO ()
