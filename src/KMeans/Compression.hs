@@ -20,7 +20,7 @@ data Centroid = Centroid Double Double Double
     deriving (Eq)
 
 instance Show Centroid where
-    show (Centroid r g b) = "--\n(" ++ show (round r) ++ "," ++ show (round g) ++ "," ++ show (round b) ++ ")\n-"
+    show (Centroid r g b) = "--\n(" ++ show (round r :: Int) ++ "," ++ show (round g :: Int) ++ "," ++ show (round b :: Int) ++ ")\n-"
 
 -- euclidian distance between 2 vector
 
