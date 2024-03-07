@@ -24,7 +24,12 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      DataStruct
+      KMeans.Compression
+      Parsing.FileIsValid
+      Parsing.FillDataStruct
+      Parsing.GetInfoLine
+      Parsing.LibParsing
       Parsing.ParsingArg
       Parsing.ParsingImg
   other-modules:
@@ -33,9 +38,10 @@ library
       Paths_imageCompressor
   hs-source-dirs:
       src
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  ghc-options: -package directory -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , random
   default-language: Haskell2010
 
 executable imageCompressor-exe
@@ -46,23 +52,26 @@ executable imageCompressor-exe
       Paths_imageCompressor
   hs-source-dirs:
       app
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -package directory -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
     , imageCompressor
+    , random
   default-language: Haskell2010
 
 test-suite imageCompressor-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      TestParsing
       Paths_imageCompressor
   autogen-modules:
       Paths_imageCompressor
   hs-source-dirs:
       test
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -package directory -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
     , imageCompressor
+    , random
   default-language: Haskell2010
