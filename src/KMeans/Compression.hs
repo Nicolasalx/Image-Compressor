@@ -8,6 +8,7 @@
 module KMeans.Compression (startKMeans) where
 import System.Random (randomRIO)
 import DataStruct (Pixel(..))
+import System.Exit
 
 data Point = Point Int Int
     deriving (Eq)
@@ -175,4 +176,4 @@ startKMeans (Just nbCluster) (Just limit) color = do
     let newCentroid = computeNewCentroid dataPoint
     let res = kmeansLoop (fst newCentroid) limit
     printKMeans res
---    kmeansLoop newCentroid limit
+startKMeans _ _ _ = exitWith (ExitFailure 84)
