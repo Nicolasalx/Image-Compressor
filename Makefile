@@ -7,7 +7,7 @@
 
 NAME		=	imageCompressor
 
-BIN_PATH	:=	$(shell stack path --local-install-root --resolver=lts-20.11)
+BIN_PATH	:=	$(shell stack path --allow-different-user --local-install-root --resolver=lts-20.11)
 
 NAME_TEST 	= 	unit_tests
 
