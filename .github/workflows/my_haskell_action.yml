@@ -26,6 +26,7 @@ jobs:
             chown -R $(id -un):$(id -gn) ~
             set +e
             make
+            cd $(stack path --local-install-root --resolver=lts-20.11)
             if [ $? -ne 0 ]; then
               echo "- ### Compilation failed ❌" >> $GITHUB_STEP_SUMMARY
               echo "Compilation failed."

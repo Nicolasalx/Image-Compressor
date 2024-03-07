@@ -13,9 +13,6 @@ NAME_TEST 	= 	unit_tests
 
 $(NAME):
 	stack build --resolver=lts-20.11 --allow-different-user
-	printf "\n\n\n\n"
-	stack path --local-install-root --resolver=lts-20.11
-	printf "\n\n\n\n"
 	cp $(BIN_PATH)/bin/$(NAME)-exe $(NAME)
 
 all: $(NAME)
