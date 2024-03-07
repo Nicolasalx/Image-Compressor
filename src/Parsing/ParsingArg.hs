@@ -13,7 +13,8 @@ data Args = Args
     {
         nbColors:: Maybe Int,
         convergLimit:: Maybe Double,
-        filepathImg:: Maybe String
+        filepathImg:: Maybe String,
+        isGraphical:: Bool
     } deriving (Show, Eq)
 
 defaultArgs :: Args
@@ -21,7 +22,8 @@ defaultArgs =
     Args {
         nbColors = Nothing,
         convergLimit = Nothing,
-        filepathImg = Nothing
+        filepathImg = Nothing,
+        isGraphical = False
     }
 
 isPositive :: (Num a, Ord a) => Maybe a -> Maybe a
@@ -31,9 +33,9 @@ isPositive (Just value)
 isPositive Nothing = Nothing
 
 checkArgValue :: Args -> IO Args
-checkArgValue ((Args Nothing _ _)) = exitWith (ExitFailure 84)
-checkArgValue ((Args _ Nothing _)) = exitWith (ExitFailure 84)
-checkArgValue ((Args _ _ Nothing)) = exitWith (ExitFailure 84)
+checkArgValue ((Args Nothing _ _ _)) = exitWith (ExitFailure 84)
+checkArgValue ((Args _ Nothing _ _)) = exitWith (ExitFailure 84)
+checkArgValue ((Args _ _ Nothing _)) = exitWith (ExitFailure 84)
 checkArgValue args = return args
 
 getOpts :: Args -> [String] -> Args
@@ -43,6 +45,11 @@ getOpts args ("-l" : second : remain) =
     getOpts (args {convergLimit = isPositive (readMaybe second)}) remain
 getOpts args ("-f" : second : remain) =
         getOpts (args {filepathImg = Just second}) remain
+getOpts args ("--graphical": remain) =
+    case remain of
+        [] -> getOpts (args {isGraphical = True}) []
+        _  -> error "Unexpected value after --graphical"
+
 getOpts args [] = args
 getOpts args _ = args
 

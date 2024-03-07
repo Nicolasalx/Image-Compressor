@@ -13,6 +13,7 @@ import Parsing.FillDataStruct (fillDataStruct, checkDataStruct)
 import Parsing.FileIsValid (isFileValid, nonEmptyLines)
 import Parsing.GetInfoLine (splitByCommas, extract, isACharOutsideParenthese)
 import DataStruct (Pixel(..))
+import Parsing.ParsingRealImg (parsingRealImg)
 import System.IO
 import System.Directory (doesFileExist)
 
@@ -34,7 +35,9 @@ checkFilePath True = pure ()
 checkFilePath False = putError "The filePath is not a path of a file!"
 
 parsingFile :: Args -> IO [Pixel]
-parsingFile (Args _ _ (Just filepath)) = do
+parsingFile (Args nbCol convLimit (Just filepath) True) =
+    parsingRealImg (Args nbCol convLimit (Just filepath) True)
+parsingFile (Args _ _ (Just filepath) False) = do
     isAFile <- doesFileExist filepath
     checkFilePath isAFile
     file <- openFile filepath ReadMode

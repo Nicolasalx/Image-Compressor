@@ -15,6 +15,6 @@ import System.Environment
 main :: IO ()
 main = do
     args <- getArgs
-    (Args nbCol convLimit fpImg) <- checkArgValue (parsingArgs args)
-    arrayPointColour <- parsingFile (Args nbCol convLimit fpImg)
+    (Args nbCol convLimit fpImg isGraph) <- checkArgValue (parsingArgs args)
+    arrayPointColour <- parsingFile (Args nbCol convLimit fpImg isGraph)
     startKMeans nbCol convLimit arrayPointColour
