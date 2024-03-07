@@ -9,7 +9,7 @@ on:
 jobs:
   check_all:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     container:
       image: epitechcontent/epitest-docker:latest
