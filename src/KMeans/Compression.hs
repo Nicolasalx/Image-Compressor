@@ -62,8 +62,8 @@ findClosestCentroid [] _ smallest = smallest
 
 -- ???
 
-initCentroidAndColor :: [Centroid] -> [(Centroid, [Pixel])]
-initCentroidAndColor centroidList =
+initCentroidList :: [Centroid] -> [(Centroid, [Pixel])]
+initCentroidList centroidList =
     map (\centroid -> (centroid, [])) centroidList
 
 cmpCentroid :: Centroid -> Pixel -> (Centroid, [Pixel]) -> (Centroid, [Pixel])
@@ -166,15 +166,15 @@ startKMeans :: Maybe Int -> Maybe Double -> Bool -> [Pixel] -> IO ()
 startKMeans (Just nbCluster) (Just limit) False color = do
     randomList <- createRandomList (nbCluster * 3)
     let centroid = initCentroid randomList
-    let dataPoint = (assignDataPoint (centroid) color (initCentroidAndColor centroid))
-    let newCentroid = computeNewCentroid dataPoint
+    let cent = (assignDataPoint (centroid) color (initCentroidList centroid))
+    let newCentroid = computeNewCentroid cent
     let res = kmeansLoop (fst newCentroid) limit
     printKMeans res
 startKMeans (Just nbCluster) (Just limit) True color = do
     randomList <- createRandomList (nbCluster * 3)
     let centroid = initCentroid randomList
-    let dataPoint = (assignDataPoint (centroid) color (initCentroidAndColor centroid))
-    let newCentroid = computeNewCentroid dataPoint
+    let cent = (assignDataPoint (centroid) color (initCentroidList centroid))
+    let newCentroid = computeNewCentroid cent
     let res = kmeansLoop (fst newCentroid) limit
     exportInPng res
 startKMeans _ _ _ _ = exitWith (ExitFailure 84)
