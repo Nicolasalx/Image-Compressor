@@ -32,6 +32,12 @@ isPositive (Just value)
     | otherwise = Just value
 isPositive Nothing = Nothing
 
+isStrictlyPositive :: (Num a, Ord a) => Maybe a -> Maybe a
+isStrictlyPositive (Just value)
+    | value <= 0 = Nothing
+    | otherwise = Just value
+isStrictlyPositive Nothing = Nothing
+
 checkArgValue :: Args -> IO Args
 checkArgValue ((Args Nothing _ _ _)) = exitWith (ExitFailure 84)
 checkArgValue ((Args _ Nothing _ _)) = exitWith (ExitFailure 84)
@@ -42,7 +48,8 @@ getOpts :: Args -> [String] -> Args
 getOpts args ("-n" : second : remain) =
     getOpts (args {nbColors = isPositive (readMaybe second)}) remain
 getOpts args ("-l" : second : remain) =
-    getOpts (args {convergLimit = isPositive (readMaybe second)}) remain
+    getOpts (args {convergLimit =
+        isStrictlyPositive (readMaybe second)}) remain
 getOpts args ("-f" : second : remain) =
         getOpts (args {filepathImg = Just second}) remain
 getOpts args ("--graphical": remain) =
