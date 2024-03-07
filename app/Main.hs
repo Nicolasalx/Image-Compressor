@@ -17,4 +17,4 @@ main = do
     args <- getArgs
     (Args nbCol convLimit fpImg isGraph) <- checkArgValue (parsingArgs args)
     arrayPointColour <- parsingFile (Args nbCol convLimit fpImg isGraph)
-    startKMeans nbCol convLimit {- true ou false pour graphical -} arrayPointColour
+    startKMeans nbCol convLimit isGraph arrayPointColour
