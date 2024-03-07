@@ -28,7 +28,8 @@ parseInstruction line
         closeParenCount = countOccurrences ')' line
 
 parseEachLine :: [String] -> Maybe [[[Int]]]
-parseEachLine = traverse parseInstruction
+parseEachLine [] = Nothing
+parseEachLine str = traverse parseInstruction str
 
 handleFileOrError :: Either IOException Handle -> IO [Pixel]
 handleFileOrError (Left e) = putError
