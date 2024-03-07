@@ -5,7 +5,7 @@
 -- FilldataStruct
 -}
 
-module Parsing.FillDataStruct(fillDataStruct, checkDataStruct) where
+module Parsing.FillDataStruct(fillDataStruct, checkDataStruct, processEntry) where
 import DataStruct (Pixel(..))
 import System.Exit
 

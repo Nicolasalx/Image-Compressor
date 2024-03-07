@@ -25,7 +25,6 @@ dependencies:
 - JuicyPixels
 
 ghc-options:
-- -package directory
 - -Wall
 - -Wcompat
 - -Widentities
@@ -60,3 +59,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - imageCompressor
+    - HUnit

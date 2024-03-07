@@ -32,26 +32,35 @@ isPositive (Just value)
     | otherwise = Just value
 isPositive Nothing = Nothing
 
-checkArgValue :: Args -> IO Args
-checkArgValue ((Args Nothing _ _ _)) = exitWith (ExitFailure 84)
-checkArgValue ((Args _ Nothing _ _)) = exitWith (ExitFailure 84)
-checkArgValue ((Args _ _ Nothing _)) = exitWith (ExitFailure 84)
-checkArgValue args = return args
+isStrictlyPositive :: (Num a, Ord a) => Maybe a -> Maybe a
+isStrictlyPositive (Just value)
+    | value <= 0 = Nothing
+    | otherwise = Just value
+isStrictlyPositive Nothing = Nothing
 
-getOpts :: Args -> [String] -> Args
+checkArgValue :: Maybe Args -> IO Args
+checkArgValue Nothing = exitWith (ExitFailure 84)
+checkArgValue (Just (Args Nothing _ _ _)) = exitWith (ExitFailure 84)
+checkArgValue (Just (Args _ Nothing _ _)) = exitWith (ExitFailure 84)
+checkArgValue (Just (Args _ _ Nothing _)) = exitWith (ExitFailure 84)
+checkArgValue (Just args) = return args
+
+getOpts :: Args -> [String] -> Maybe Args
 getOpts args ("-n" : second : remain) =
-    getOpts (args {nbColors = isPositive (readMaybe second)}) remain
+    getOpts (args {nbColors = isStrictlyPositive (readMaybe second)}) remain
 getOpts args ("-l" : second : remain) =
-    getOpts (args {convergLimit = isPositive (readMaybe second)}) remain
+    getOpts (args {convergLimit =
+        isStrictlyPositive (readMaybe second)}) remain
 getOpts args ("-f" : second : remain) =
         getOpts (args {filepathImg = Just second}) remain
 getOpts args ("--graphical": remain) =
     case remain of
         [] -> getOpts (args {isGraphical = True}) []
         _  -> error "Unexpected value after --graphical"
+getOpts args [] = Just args
+getOpts args _ = Just args
 
-getOpts args [] = args
-getOpts args _ = args
-
-parsingArgs :: [String] -> Args
-parsingArgs args = getOpts defaultArgs args
+parsingArgs :: [String] -> Maybe Args
+parsingArgs args
+    | length args < 7 = getOpts defaultArgs args
+    | otherwise = Nothing
