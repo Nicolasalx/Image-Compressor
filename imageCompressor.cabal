@@ -26,6 +26,7 @@ library
   exposed-modules:
       DataStruct
       KMeans.Compression
+      KMeans.ExportInPng
       Parsing.FileIsValid
       Parsing.FillDataStruct
       Parsing.GetInfoLine
