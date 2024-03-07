@@ -24,6 +24,7 @@ dependencies:
 
 ghc-options:
 - -package directory
+- -package random
 - -Wall
 - -Wcompat
 - -Widentities
