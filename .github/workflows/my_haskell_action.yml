@@ -43,3 +43,21 @@ jobs:
             fi
             exit 0
           }
+
+    - name: run functional tests
+      run: |
+          echo "## ⚙️ Functionnal Tests" >> $GITHUB_STEP_SUMMARY
+          {
+            chown -R $(id -un):$(id -gn) ~
+            set +e
+
+            output=$(./Test.sh)
+            fail_count=$(echo "$output" | grep -o "\\[\\e\\[91mFAIL\\e\\[0m\\]" | wc -l)
+
+            if [ "$fail_count" -gt 0 ]; then
+              echo "- ### Functionnal tests have failed with $fail_count errors ❌"
+              exit 1
+            else
+              echo "- ### All functionnal tests have succeed ! ✅"
+            fi
+          }
