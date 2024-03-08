@@ -135,7 +135,7 @@ extractColorList [] = []
 
 checkLimit :: ([(Centroid, [Pixel])], Double) -> Double -> [(Centroid, [Pixel])]
 checkLimit centroidColor limit
-    | (snd centroidColor) > limit = kmeansLoop (fst centroidColor) limit
+    | (snd centroidColor) >= limit = kmeansLoop (fst centroidColor) limit
     | otherwise = fst centroidColor
 
 removeColor :: [(Centroid, [Pixel])] -> [(Centroid, [Pixel])]
