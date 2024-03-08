@@ -5,7 +5,7 @@
 -- ParsingArg
 -}
 
-module Parsing.ParsingArg (parsingArgs, checkArgValue, Args(..), isPositive) where
+module Parsing.ParsingArg (parsingArgs, checkArgValue, Args(..), isPositive, defaultArgs, isStrictlyPositive) where
 import Text.Read (readMaybe)
 import System.Exit
 

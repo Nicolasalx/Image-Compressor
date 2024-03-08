@@ -5,7 +5,16 @@
 -- compression
 -}
 
-module KMeans.Compression (startKMeans) where
+module KMeans.Compression (startKMeans,
+    euclidianDistance,
+    euclidianDistanceCent,
+    initCentroid,
+    cmpCentroidColor,
+    findClosestCentroid,
+    appendColorToCentroid,
+    assignDataPoint,
+    initCentroidList
+) where
 import DataStruct (Pixel(..), Centroid(..))
 import KMeans.ExportInPng (exportInPng)
 import System.Exit

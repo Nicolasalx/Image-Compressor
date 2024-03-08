@@ -8,5 +8,9 @@
 module KMeans.ExportInPng (exportInPng) where
 import DataStruct (Pixel(..), Centroid(..))
 
+-- Centroid -> Cluster
+-- For in list cluster
+-- Replace Color dans le pixel par celle du cluster
+
 exportInPng :: [(Centroid, [Pixel])] -> IO ()
 exportInPng pixel = print (pixel)
