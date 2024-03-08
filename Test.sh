@@ -45,6 +45,41 @@ check_fail()
     fi
 }
 
+check_grep_not_found()
+{
+    if [ $? -eq 0 ]; then
+        echo -ne "[\e[91mFAIL\e[0m]"
+        RETURN_VALUE=1
+    else
+        echo -ne "[\e[92mPASS\e[0m]"
+    fi
+}
+
+check_nb_section()
+{
+    for file in tests_file/single/*
+    do
+        ./imageCompressor -n $1 -l 0.8 -f $file | grep -- "--" | wc -l | grep $1 &> /dev/null
+        check_grep_found
+    done
+    for file in tests_file/advanced/*
+    do
+        ./imageCompressor -n $1 -l 0.8 -f $file | grep -- "--" | wc -l | grep $1 &> /dev/null
+        check_grep_found
+    done
+    echo -ne "\n"
+}
+
+check_grep_found()
+{
+    if [ $? -eq 0 ]; then
+        echo -ne "[\e[92mPASS\e[0m]"
+    else
+        echo -ne "[\e[91mFAIL\e[0m]"
+        RETURN_VALUE=1
+    fi
+}
+
 i_test=1
 
 test_name()
@@ -166,5 +201,29 @@ check_success
 test_name "Valid command 9"
 ./imageCompressor -n 20 -l 25 -f "tests_file/single/subject_example" &> /dev/null
 check_success
+
+echo -e "\n\e[1mTest KMeans output:\e[0m\n"
+
+test_name "File with 2 very close color"
+for i in $(seq 0 10);
+do
+    ./imageCompressor -n 2 -l 0.8 -f "tests_file/advanced/10_2_similar_color" | grep "(0,0,0)" &> /dev/null
+    check_grep_not_found
+done
+echo -ne "\n\n"
+
+test_name "File with 5 very close color"
+for i in $(seq 0 10);
+do
+    ./imageCompressor -n 2 -l 0.8 -f "tests_file/advanced/10_5_similar_color" | grep "(0,0,0)" &> /dev/null
+    check_grep_not_found
+done
+echo -ne "\n\n"
+
+test_name "Check number section single"
+for i in $(seq 1 17)
+do
+    check_nb_section $i
+done
 
 exit $RETURN_VALUE
