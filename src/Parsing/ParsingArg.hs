@@ -5,7 +5,7 @@
 -- ParsingArg
 -}
 
-module Parsing.ParsingArg (parsingArgs, checkArgValue, Args(..), isPositive) where
+module Parsing.ParsingArg (parsingArgs, checkArgValue, Args(..), isPositive, defaultArgs, isStrictlyPositive) where
 import Text.Read (readMaybe)
 import System.Exit
 
@@ -58,9 +58,7 @@ getOpts args ("--graphical": remain) =
         [] -> getOpts (args {isGraphical = True}) []
         _  -> error "Unexpected value after --graphical"
 getOpts args [] = Just args
-getOpts args _ = Just args
+getOpts _ _ = Nothing
 
 parsingArgs :: [String] -> Maybe Args
-parsingArgs args
-    | length args < 7 = getOpts defaultArgs args
-    | otherwise = Nothing
+parsingArgs args = getOpts defaultArgs args

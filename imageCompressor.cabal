@@ -67,6 +67,14 @@ test-suite imageCompressor-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      CodeState
+      TestKMeans.TestAlgo
+      TestParsing.DataStructIsValid
+      TestParsing.FileIsValid
+      TestParsing.GetInfoLineIsValid
+      TestParsing.IsAParsingImg
+      TestParsing.LibParsingTest
+      TestParsing.ParsingArgIsOk
       Paths_imageCompressor
   autogen-modules:
       Paths_imageCompressor

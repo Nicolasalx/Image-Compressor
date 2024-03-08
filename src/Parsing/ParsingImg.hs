@@ -5,7 +5,7 @@
 -- ParsingImg
 -}
 
-module Parsing.ParsingImg (parsingFile) where
+module Parsing.ParsingImg (parsingFile, parseInstruction, parseEachLine) where
 
 import Parsing.ParsingArg (Args(..))
 import Parsing.LibParsing(putError, countOccurrences)
