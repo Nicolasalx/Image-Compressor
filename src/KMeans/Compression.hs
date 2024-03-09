@@ -170,18 +170,36 @@ printKMeans ((centroid, color) : remain) =
     print centroid >> printKMeansColor color >> printKMeans remain
 printKMeans [] = return ()
 
+-- !---------------------------------------------
+containPixel :: [Centroid] -> Pixel -> Bool
+containPixel ((Centroid centR centG centB) : remain) (Pixel _ _ r g b)
+    | (round centR) == r && (round centG) == g && (round centB) == b = True
+    | otherwise = containPixel remain (Pixel 0 0 r g b)
+containPixel [] _ = False
+
+getFirstNColor :: Int -> [Pixel] -> [Centroid] -> [Int] -> [Centroid]
+getFirstNColor 0 _ _ _ = []
+getFirstNColor n [] _ rand = initCentroid (take (n * 3) rand)
+getFirstNColor n ((Pixel _ _ r g b) : remain) centroid rand
+    | containPixel centroid (Pixel 0 0 r g b) == False =
+        (Centroid (fromIntegral r) (fromIntegral g) (fromIntegral b))
+        : getFirstNColor (n - 1) remain ((Centroid (fromIntegral r)
+            (fromIntegral g) (fromIntegral b)) : centroid) rand
+    | otherwise = getFirstNColor n remain centroid rand
+-- !---------------------------------------------
+
 -- startKMeans N L IsGraphical [Pixel]
 startKMeans :: Maybe Int -> Maybe Double -> Bool -> [Pixel] -> IO ()
 startKMeans (Just nbCluster) (Just limit) False color = do
     randomList <- createRandomList (nbCluster * 3)
-    let centroid = initCentroid randomList
+    let centroid = getFirstNColor nbCluster color [] randomList
     let cent = (assignDataPoint (centroid) color (initCentroidList centroid))
     let newCentroid = computeNewCentroid cent
     let res = kmeansLoop (fst newCentroid) limit
     printKMeans res
 startKMeans (Just nbCluster) (Just limit) True color = do
     randomList <- createRandomList (nbCluster * 3)
-    let centroid = initCentroid randomList
+    let centroid = getFirstNColor nbCluster color [] randomList
     let cent = (assignDataPoint (centroid) color (initCentroidList centroid))
     let newCentroid = computeNewCentroid cent
     let res = kmeansLoop (fst newCentroid) limit
