@@ -25,12 +25,6 @@ computeAverageColor :: [Pixel] -> Centroid
 computeAverageColor colorList =
     divCentroid (sumColor colorList) (fromIntegral (length colorList))
 
--- ! need to return a double of
--- computeNewCentroid :: [(Centroid, [Color])] -> ([(Centroid, [Color])], Double)
--- computeNewCentroid (first : remain) =
---     (computeAverageColor (snd first), snd first) : computeNewCentroid remain
--- computeNewCentroid [] = ([], convergence)
-
 getPixelByIndex :: [Pixel] -> Int -> [Pixel]
 getPixelByIndex ((Pixel x y r g b i) : remain) index
     | index == i = (Pixel x y r g b i) : getPixelByIndex remain index
@@ -44,11 +38,3 @@ computeNewCentroidHelper ([], _) _ = []
 
 computeNewCentroid :: ([Centroid], [Pixel]) -> [Centroid]
 computeNewCentroid centroid = computeNewCentroidHelper centroid 0
-
--- computeNewCentroid (first : remain) =
---     let prevCentroid = fst first
---         newCentroid = computeAverageColor (snd first)
---         (newCluster, maxDistance) = computeNewCentroid remain
---     in ((newCentroid, (snd first)) : newCluster, max
---         (euclidianDistanceCent prevCentroid newCentroid) maxDistance)
--- computeNewCentroid [] = ([], 0.0)

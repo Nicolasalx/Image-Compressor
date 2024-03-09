@@ -47,11 +47,11 @@ kmeansLoop (prevCentroid, pixel) limit =
     kmeansLoopHelper (prevCentroid, (reassignColor (prevCentroid, pixel))) limit
 
 -- startKMeans N L IsGraphical [Pixel]
-startKMeans :: Maybe Int -> Maybe Double -> Bool -> [Pixel] -> IO ()
-startKMeans (Just nbCluster) (Just limit) False color = do
+startKMeans :: Maybe Int -> Maybe Double -> (Bool, Maybe String) -> [Pixel] -> IO ()
+startKMeans (Just nbCluster) (Just limit) (False, _) color = do
     randomList <- createRandomList (nbCluster * 3)
     printKMeans (kmeansLoop ((getFirstNColor nbCluster color [] randomList), color) limit)
-startKMeans (Just nbCluster) (Just limit) True color = do
+startKMeans (Just nbCluster) (Just limit) (True, Just filePath) color = do
     randomList <- createRandomList (nbCluster * 3)
-    exportInPng (kmeansLoop ((getFirstNColor nbCluster color [] randomList), color) limit)
+    exportInPng (kmeansLoop ((getFirstNColor nbCluster color [] randomList), color) limit) filePath
 startKMeans _ _ _ _ = exitWith (ExitFailure 84)
