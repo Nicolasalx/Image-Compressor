@@ -52,7 +52,7 @@ jobs:
             set +e
 
             output=$(./Test.sh)
-            fail_count=$(echo "$output" | grep -o "\\[\\e\\[91mFAIL\\e\\[0m\\]" | wc -l)
+            fail_count=$(echo "$output" | grep -o "[FAIL]" | wc -l)
 
             if [ "$fail_count" -gt 0 ]; then
               echo "- ### Functionnal tests have failed with $fail_count errors ❌" >> $GITHUB_STEP_SUMMARY
