@@ -220,7 +220,7 @@ do
 done
 echo -ne "\n\n"
 
-test_name "Check number section single"
+test_name "Check number section"
 for i in $(seq 1 17)
 do
     check_nb_section $i

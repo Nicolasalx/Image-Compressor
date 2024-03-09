@@ -12,5 +12,5 @@ import DataStruct (Pixel(..), Centroid(..))
 -- For in list cluster
 -- Replace Color dans le pixel par celle du cluster
 
-exportInPng :: [(Centroid, [Pixel])] -> IO ()
+exportInPng :: ([Centroid], [Pixel]) -> IO ()
 exportInPng pixel = print (pixel)

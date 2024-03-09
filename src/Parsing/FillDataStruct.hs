@@ -11,7 +11,7 @@ import System.Exit
 
 processEntry :: [[Int]] -> [Pixel]
 processEntry entry
-  | [[x, y], [r, g, b]] <- entry = [Pixel x y r g b]
+  | [[x, y], [r, g, b]] <- entry = [Pixel x y r g b 0]
   | otherwise = error "Invalid entry"
 
 checkDataStruct :: Maybe [Pixel] -> IO [Pixel]
