@@ -37,6 +37,6 @@ tests_run:
 # cat profiling_imageCompressor.prof
 profiling: fclean
 	stack install --profile --resolver=lts-20.11 --allow-different-user --local-bin-path .
-	cp $(NAME)-exe profiling_$(NAME)
+	mv $(NAME)-exe profiling_$(NAME)
 
 .PHONY: all clean fclean re unit_tests tests_run profiling
