@@ -13,16 +13,8 @@ import KMeans.ExportInPng (exportInPng)
 import KMeans.GetFirstNColor (getFirstNColor)
 import KMeans.PrintKMeans (printKMeans)
 import KMeans.ReassignColor (reassignColor)
+import KMeans.CreateRandomList (createRandomList)
 import System.Exit
-import System.Random (randomRIO)
-
-createRandomList :: Int -> IO [Int]
-createRandomList 0 = return []
-createRandomList nbCentroid = do
-    randomNb <- randomRIO (0, 255)
-    remain <- createRandomList (nbCentroid - 1)
-    return (randomNb : remain)
--- ! ----------------------------------
 
 getMaxDistance :: ([Centroid], [Centroid]) -> Double -> Double
 getMaxDistance ((firstPrev : remainPrev), (first : remain)) maxD
@@ -48,10 +40,10 @@ kmeansLoop (prevCentroid, pixel) limit =
 
 -- startKMeans N L IsGraphical [Pixel]
 startKMeans :: Maybe Int -> Maybe Double -> (Bool, Maybe String) -> [Pixel] -> IO ()
-startKMeans (Just nbCluster) (Just limit) (False, _) color = do
-    randomList <- createRandomList (nbCluster * 3)
-    printKMeans (kmeansLoop ((getFirstNColor nbCluster color [] randomList), color) limit)
-startKMeans (Just nbCluster) (Just limit) (True, Just filePath) color = do
-    randomList <- createRandomList (nbCluster * 3)
-    exportInPng (kmeansLoop ((getFirstNColor nbCluster color [] randomList), color) limit) filePath
+startKMeans (Just n) (Just limit) (False, _) color = do
+    randomList <- createRandomList (n * 3)
+    printKMeans (kmeansLoop ((getFirstNColor n color [] randomList), color) limit)
+startKMeans (Just n) (Just limit) (True, Just filePath) color = do
+    randomList <- createRandomList (n * 3)
+    exportInPng (kmeansLoop ((getFirstNColor n color [] randomList), color) limit) n filePath
 startKMeans _ _ _ _ = exitWith (ExitFailure 84)

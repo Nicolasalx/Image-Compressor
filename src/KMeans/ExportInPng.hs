@@ -6,31 +6,44 @@
 -}
 
 module KMeans.ExportInPng (exportInPng) where
-import DataStruct (Pixel(..), Centroid(..))
 import Codec.Picture (writePng)
 import Codec.Picture.Types
+import qualified Data.Sequence as Seq
+import DataStruct (Pixel(..), Centroid(..))
 
--- Centroid -> Cluster
--- For in list cluster
--- Replace Color dans le pixel par celle du cluster
+centroidToPixel :: Centroid -> PixelRGB8
+centroidToPixel (Centroid r g b) = PixelRGB8 (round r) (round g) (round b)
 
-centroidToPixelRGB8 :: Centroid -> PixelRGB8
-centroidToPixelRGB8 (Centroid r g b) = PixelRGB8 (round r) (round g) (round b)
+centroidToPixelRGB8 :: [Centroid] -> Seq.Seq PixelRGB8
+centroidToPixelRGB8 centroids = Seq.fromList (map centroidToPixel centroids)
 
-pixelsToImage :: Int -> Int -> ([Centroid], [DataStruct.Pixel]) -> Image PixelRGB8
-pixelsToImage width height pixels =
-    generateImage pixelGenerator width height
+pixelToSeqPixel :: [DataStruct.Pixel] -> Seq.Seq DataStruct.Pixel
+pixelToSeqPixel pixel = Seq.fromList pixel
+
+getIPixel :: DataStruct.Pixel -> Int
+getIPixel (Pixel _ _ _ _ _ i) = i
+
+pixelToImage :: (Int, Int) -> (Seq.Seq PixelRGB8, Seq.Seq DataStruct.Pixel) -> Image PixelRGB8
+pixelToImage (width, height) (centroid, pixel) =
+    generateImage getPixelColor width height
     where
-        pixelGenerator x y =
-            let (Pixel _ _ _ _ _ i) = (snd pixels) !! (y * width + x)
-            in centroidToPixelRGB8 ((fst pixels) !! i)
+        getPixelColor x y = Seq.index centroid (getIPixel (Seq.index pixel (y * width + x)))
 
-getSizeX :: DataStruct.Pixel -> Int
-getSizeX (Pixel x _ _ _ _ _) = x
+extractXY :: Maybe DataStruct.Pixel -> (Int, Int)
+extractXY (Just (Pixel x y _ _ _ _)) = (x + 1, y + 1)
+extractXY Nothing = (1, 1)
 
-getSizeY :: DataStruct.Pixel -> Int
-getSizeY (Pixel _ y _ _ _ _) = y
+getImageSize :: Seq.Seq DataStruct.Pixel -> (Int, Int)
+getImageSize pixel = extractXY (Seq.lookup (Seq.length pixel - 1) pixel)
 
-exportInPng :: ([Centroid], [DataStruct.Pixel]) -> String -> IO ()
-exportInPng pixel filePath =
-    writePng ("output_" ++ filePath) (pixelsToImage ((getSizeX (last (snd (pixel)))) + 1) ((getSizeY (last (snd (pixel)))) + 1) pixel)
+createImage :: (Seq.Seq PixelRGB8, Seq.Seq DataStruct.Pixel) -> Image PixelRGB8
+createImage (centroid, pixel) = pixelToImage (getImageSize pixel) (centroid, pixel)
+
+getFileName :: String -> Int -> String
+getFileName filename n =
+    (take (length filename - 4) filename)
+    ++ "_" ++ show n ++ "_color.png"
+
+exportInPng :: ([Centroid], [DataStruct.Pixel]) -> Int -> String -> IO ()
+exportInPng (centroid, pixel) n filePath =
+    writePng (getFileName filePath n) (createImage (centroidToPixelRGB8 centroid, pixelToSeqPixel pixel))

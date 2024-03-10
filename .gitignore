@@ -1,5 +1,10 @@
 .stack-work/
 *~
 imageCompressor
+profiling_imageCompressor
+dist-newstyle
 xpmImg
 convertImg
+Image
+*.png
+*.prof
