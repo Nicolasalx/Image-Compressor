@@ -24,5 +24,6 @@ getFirstNColor 0 _ _ _ = []
 getFirstNColor n [] _ rand = initCentroid (take (n * 3) rand)
 getFirstNColor n ((Pixel _ _ r g b _) : remain) centroid rand
     | containPixel centroid (Pixel 0 0 r g b 0) == False =
-        (createICent r g b) : getFirstNColor (n - 1) remain ((createICent r g b) : centroid) rand
+        (createICent r g b) :
+            getFirstNColor (n - 1) remain ((createICent r g b) : centroid) rand
     | otherwise = getFirstNColor n remain centroid rand

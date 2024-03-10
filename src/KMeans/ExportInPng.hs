@@ -27,7 +27,8 @@ pixelToImage :: (Int, Int) -> (Seq.Seq PixelRGB8, Seq.Seq DataStruct.Pixel) -> I
 pixelToImage (width, height) (centroid, pixel) =
     generateImage getPixelColor width height
     where
-        getPixelColor x y = Seq.index centroid (getIPixel (Seq.index pixel (y * width + x)))
+        getPixelColor x y = Seq.index centroid
+            (getIPixel (Seq.index pixel (y * width + x)))
 
 extractXY :: Maybe DataStruct.Pixel -> (Int, Int)
 extractXY (Just (Pixel x y _ _ _ _)) = (x + 1, y + 1)
@@ -37,7 +38,8 @@ getImageSize :: Seq.Seq DataStruct.Pixel -> (Int, Int)
 getImageSize pixel = extractXY (Seq.lookup (Seq.length pixel - 1) pixel)
 
 createImage :: (Seq.Seq PixelRGB8, Seq.Seq DataStruct.Pixel) -> Image PixelRGB8
-createImage (centroid, pixel) = pixelToImage (getImageSize pixel) (centroid, pixel)
+createImage (centroid, pixel) =
+    pixelToImage (getImageSize pixel) (centroid, pixel)
 
 getFileName :: String -> Int -> String
 getFileName filename n =
@@ -46,4 +48,5 @@ getFileName filename n =
 
 exportInPng :: ([Centroid], [DataStruct.Pixel]) -> Int -> String -> IO ()
 exportInPng (centroid, pixel) n filePath =
-    writePng (getFileName filePath n) (createImage (centroidToPixelRGB8 centroid, pixelToSeqPixel pixel))
+    writePng (getFileName filePath n)
+        (createImage (centroidToPixelRGB8 centroid, pixelToSeqPixel pixel))

@@ -16,7 +16,8 @@ printKMeansColor [] _ = return ()
 
 printKMeansHelper :: ([Centroid], [Pixel]) -> Int -> IO ()
 printKMeansHelper (first : remain, color) index =
-    print first >> printKMeansColor color index >> printKMeansHelper (remain, color) (index + 1)
+    print first >> printKMeansColor color index
+    >> printKMeansHelper (remain, color) (index + 1)
 printKMeansHelper ([], _) _ = return ()
 
 printKMeans :: ([Centroid], [Pixel]) -> IO ()

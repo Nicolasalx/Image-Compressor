@@ -1,9 +1,9 @@
---
+{-
 -- EPITECH PROJECT, 2024
 -- B-FUN-400-PAR-4-1-compressor-thibaud.cathala
 -- File description:
 -- CreateRandomList
---
+-}
 
 module KMeans.CreateRandomList (createRandomList) where
 import System.Random (randomRIO)

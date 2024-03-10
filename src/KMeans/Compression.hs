@@ -27,23 +27,28 @@ getMaxDistance (_, _) maxD = maxD
 
 checkLimit :: [Centroid] -> ([Centroid], [Pixel]) -> Double -> ([Centroid], [Pixel])
 checkLimit prevCentroid centroid limit
-    | (getMaxDistance (prevCentroid, (fst centroid)) 0) >= limit = kmeansLoop centroid limit
+    | (getMaxDistance (prevCentroid, (fst centroid)) 0) >= limit =
+        kmeansLoop centroid limit
     | otherwise = centroid
 
 kmeansLoopHelper :: ([Centroid], [Pixel]) -> Double -> ([Centroid], [Pixel])
 kmeansLoopHelper (prevCentroid, newPixel) limit
-    = checkLimit prevCentroid ((computeNewCentroid (prevCentroid, newPixel)), newPixel) limit
+    = checkLimit prevCentroid
+        ((computeNewCentroid (prevCentroid, newPixel)), newPixel) limit
 
 kmeansLoop :: ([Centroid], [Pixel]) -> Double -> ([Centroid], [Pixel])
 kmeansLoop (prevCentroid, pixel) limit =
-    kmeansLoopHelper (prevCentroid, (reassignColor (prevCentroid, pixel))) limit
+    kmeansLoopHelper
+        (prevCentroid, (reassignColor (prevCentroid, pixel))) limit
 
 -- startKMeans N L IsGraphical [Pixel]
 startKMeans :: Maybe Int -> Maybe Double -> (Bool, Maybe String) -> [Pixel] -> IO ()
 startKMeans (Just n) (Just limit) (False, _) color = do
     randomList <- createRandomList (n * 3)
-    printKMeans (kmeansLoop ((getFirstNColor n color [] randomList), color) limit)
+    printKMeans (kmeansLoop
+        ((getFirstNColor n color [] randomList), color) limit)
 startKMeans (Just n) (Just limit) (True, Just filePath) color = do
     randomList <- createRandomList (n * 3)
-    exportInPng (kmeansLoop ((getFirstNColor n color [] randomList), color) limit) n filePath
+    exportInPng (kmeansLoop
+        ((getFirstNColor n color [] randomList), color) limit) n filePath
 startKMeans _ _ _ _ = exitWith (ExitFailure 84)
