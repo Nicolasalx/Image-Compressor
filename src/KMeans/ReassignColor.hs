@@ -5,7 +5,7 @@
 -- ReassignColor
 -}
 
-module KMeans.ReassignColor (reassignColor) where
+module KMeans.ReassignColor (reassignColor, findClosestCentroid) where
 import DataStruct (Pixel(..), Centroid(..), Color(..))
 import KMeans.EuclidianDistance (euclidianDistance)
 
