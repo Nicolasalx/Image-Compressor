@@ -31,15 +31,19 @@ parseEachLine :: [String] -> Maybe [[[Int]]]
 parseEachLine [] = Nothing
 parseEachLine str = traverse parseInstruction str
 
+processFileContents :: Handle -> String -> IO [Pixel]
+processFileContents file contents =
+    isFileValid eachLine >> hClose file >> checkDataStruct
+        (fillDataStruct eachLine)
+    where
+        eachLine = parseEachLine (nonEmptyLines contents)
+
 handleFileOrError :: Either IOException Handle -> IO [Pixel]
-handleFileOrError (Left e) = putError
-    ("Error: " ++ show (e :: IOException)) >> return []
-handleFileOrError (Right file) = do
-    contents <- hGetContents file
-    let eachLine = parseEachLine (nonEmptyLines contents)
-    isFileValid eachLine
-    hClose file
-    checkDataStruct (fillDataStruct eachLine)
+handleFileOrError (Left e) = putError ("Error with the file: " ++
+    show (e :: IOException)) >> return []
+handleFileOrError (Right file) =
+    hGetContents file >>= \contents ->
+    processFileContents file contents
 
 parsingFile :: Args -> IO [Pixel]
 parsingFile (Args nbCol convLimit (Just filepath) True) =

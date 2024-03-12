@@ -14,6 +14,12 @@ SRC			:=	$(shell find src/ -name "*.hs") \
 
 NAME_TEST 	= 	unit_tests
 
+SRC_BONUS 	= 	src/graphicalBonus
+
+NAME_CONV 	=  	convertImg
+
+NAME_ROTA	= 	rotateImg
+
 $(NAME):
 	stack build --resolver=lts-20.11 --allow-different-user
 	cp $(BIN_PATH)/bin/$(NAME)-exe $(NAME)
@@ -32,6 +38,16 @@ unit_tests:
 
 tests_run:
 	stack test --resolver=lts-20.11
+
+clean_bonus:
+	rm -f $(SRC_BONUS)/*.hi $(SRC_BONUS)/*.o
+	rm -f $(NAME_CONV)
+	rm -f $(NAME_ROTA)
+
+graphical_bonus: re clean_bonus
+	stack exec -- ghc -o $(NAME_CONV) $(SRC_BONUS)/$(NAME_CONV).hs
+	stack exec -- ghc -o $(NAME_ROTA) $(SRC_BONUS)/$(NAME_ROTA).hs
+	./graphicalBonus.sh
 
 # profiling_imageCompressor -n 2 -l 0.8 -f 100_000_color.txt +RTS -p
 # cat profiling_imageCompressor.prof
