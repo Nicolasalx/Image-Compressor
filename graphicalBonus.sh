@@ -29,6 +29,7 @@ rotate()
     filename_output="rotation-$degrees-$option"
     echo "Filename : $filename_output"
     ./rotateImg $degrees img/$option $filename_output
+    interface_handler
 }
 
 convert()
@@ -55,6 +56,7 @@ convert()
     esac
 
     ./convertImg $format img/$option
+    interface_handler
 }
 
 is_float()
@@ -101,6 +103,7 @@ compress()
     echo "New path: $new_path"
 
     ./imageCompressor -n $nb_colors -l $convergence -f img/$new_path --graphical
+    interface_handler
 }
 
 leave_process()
