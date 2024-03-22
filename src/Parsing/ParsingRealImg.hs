@@ -16,7 +16,7 @@ extractPixels :: Image PixelRGB8 -> [DataStruct.Pixel]
 extractPixels img =
     [Pixel x y (fromIntegral r) (fromIntegral g) (fromIntegral b) 0 |
         y <- [0..h-1], x <- [0..w-1],
-    let PixelRGB8 r g b = pixelAt img x y]
+        PixelRGB8 r g b <- [pixelAt img x y]]
     where
         (w, h) = (imageWidth img, imageHeight img)
 

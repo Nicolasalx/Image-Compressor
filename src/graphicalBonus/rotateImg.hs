@@ -18,13 +18,6 @@ writePixelMimg90 mimg height y x img = writePixel mimg
                 x
                 (pixelAt img x y)
 
-writePixelMimg180 :: MutableImage s PixelRGB8 -> Int -> Int ->
-    Int -> Int -> Image PixelRGB8 -> ST s ()
-writePixelMimg180 mimg height width y x img = writePixel mimg
-                (width - x - 1)
-                (height - y - 1)
-                (pixelAt img x y)
-
 writePixelMimg270 :: MutableImage s PixelRGB8 -> Int -> Int ->
     Int -> Image PixelRGB8 -> ST s ()
 writePixelMimg270 mimg width y x img = writePixel mimg
@@ -38,20 +31,20 @@ writeByDegrees 90 mimg height _ y x img =
     writePixelMimg90 mimg height y x img
 writeByDegrees 270 mimg _ width y x img =
     writePixelMimg270 mimg width y x img
-writeByDegrees _ mimg height width y x img =
-    writePixelMimg180 mimg height width y x img
+writeByDegrees _ _ _ _ _ _ _ = return ()
 
 rotateImg :: Int -> Image PixelRGB8 -> Image PixelRGB8
 rotateImg degrees img@(Image { imageWidth = width, imageHeight = height }) =
-        runST $ do
-    mimg <- M.newMutableImage height width
-    let go x y
-            | x >= width = go 0 (y + 1)
-            | y >= height = M.unsafeFreezeImage mimg
-            | otherwise =
-                writeByDegrees degrees mimg height width y x img >>
-                go (x + 1) y
-    go 0 0
+    runST $ do
+        mimg <- M.newMutableImage height width
+        go 0 0 mimg
+  where
+    go x y mimg
+        | x >= width = go 0 (y + 1) mimg
+        | y >= height = M.unsafeFreezeImage mimg
+        | otherwise = writeByDegrees degrees mimg height width y x img >>
+            go (x + 1) y mimg
+
 
 rotateWithDegrees :: Either String DynamicImage -> Int -> FilePath -> IO ()
 rotateWithDegrees (Left errMsg) _ _ = putStrLn ("Could not read image: "

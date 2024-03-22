@@ -7,34 +7,32 @@ bad_value()
 
 rotate()
 {
-    options=$(ls -1 img | grep "\.png$" | awk '{print NR " " $0}')
+    options=$(ls -1 Image | grep "\.png$" | awk '{print NR " " $0}')
     selected=$(whiptail --title "Rotator" --menu "Choose a file to rotate" 20 78 10 $options 3>&1 1>&2 2>&3)
     option=$(echo "$options" | grep "^$selected " | awk '{print $2}')
     echo "File is : $option"
 
     OPTION=$(whiptail --title "Rotator" --menu "Choose the degrees to rotate" 15 50 4 \
         "1" "90" \
-        "2" "180" \
-        "3" "270" \
+        "2" "270" \
         3>&1 1>&2 2>&3)
 
     degrees="0"
 
     case $OPTION in
         1) degrees="90";;
-        2) degrees="180";;
         3) degrees="270";;
     esac
 
     filename_output="rotation-$degrees-$option"
     echo "Filename : $filename_output"
-    ./rotateImg $degrees img/$option $filename_output
+    ./rotateImg $degrees Image/$option $filename_output
     interface_handler
 }
 
 convert()
 {
-    options=$(ls -1 img | awk '{print NR " " $0}')
+    options=$(ls -1 Image | awk '{print NR " " $0}')
     selected=$(whiptail --title "Convertor" --menu "Choose a file to convert" 20 78 10 $options 3>&1 1>&2 2>&3)
     option=$(echo "$options" | grep "^$selected " | awk '{print $2}')
     echo "File is : $option"
@@ -55,7 +53,7 @@ convert()
         4) format="tiff";;
     esac
 
-    ./convertImg $format img/$option
+    ./convertImg $format Image/$option
     interface_handler
 }
 
@@ -94,7 +92,7 @@ compress()
         fi
     done
 
-    options=$(ls -1 img | awk '{print NR " " $0}')
+    options=$(ls -1 Image | awk '{print NR " " $0}')
     selected=$(whiptail --title "Convertor" --menu "Choose a file to convert" 20 78 10 $options 3>&1 1>&2 2>&3)
     option=$(echo "$options" | grep "^$selected " | awk '{print $2}')
     echo "File is : $option"
@@ -102,7 +100,7 @@ compress()
     new_path="$option"
     echo "New path: $new_path"
 
-    ./imageCompressor -n $nb_colors -l $convergence -f img/$new_path --graphical
+    ./imageCompressor -n $nb_colors -l $convergence -f Image/$new_path --graphical
     interface_handler
 }
 
