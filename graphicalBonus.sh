@@ -21,7 +21,7 @@ rotate()
 
     case $OPTION in
         1) degrees="90";;
-        3) degrees="270";;
+        2) degrees="270";;
     esac
 
     filename_output="rotation-$degrees-$option"
